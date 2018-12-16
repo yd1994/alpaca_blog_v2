@@ -1,0 +1,33 @@
+server:
+  port: 9041
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3308/alpaca_blog_e1?charset=utf8mb4&serverTimezone=GMT&useSSL=false&autoReconnect=true&allowPublicKeyRetrieval=true
+    username: root
+    password: 123456
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+  jackson:
+    serialization:
+      indent-output: true
+  redis:
+    host: 127.0.0.1
+    port: 6380
+    password: 123456
+    database: 2
+    jedis:
+      pool:
+        max-active: 8
+        max-idle: 8
+        min-idle: 0
+        max-wait: -1ms
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://registry:${REGISTRY_PASSWORD}@localhost:9040/eureka/

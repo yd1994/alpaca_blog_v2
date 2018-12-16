@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yd1994.alpacablog.blogservice.mapper.ArticleMapper">
+
+    <resultMap id="articleResultMap" type="com.yd1994.alpacablog.blogservice.entity.ArticleDO">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="summary" column="summary"/>
+        <result property="traffic" column="traffic"/>
+        <result property="top" column="top"/>
+        <result property="deleted" column="deleted"/>
+        <result property="version" column="version"/>
+        <result property="gmtCreated" column="gmt_created"/>
+        <result property="createdBy" column="created_by"/>
+        <result property="gmtModified" column="gmt_modified"/>
+        <result property="modifiedBy" column="modified_by"/>
+        <association property="categoryDO" javaType="com.yd1994.alpacablog.blogservice.entity.CategoryDO">
+            <id property="id" column="c_id"/>
+            <result property="name" column="c_name"/>
+            <result property="description" column="c_description"/>
+            <result property="enabled" column="c_enabled"/>
+            <result property="deleted" column="c_deleted"/>
+            <result property="version" column="c_version"/>
+            <result property="gmtCreated" column="c_gmt_created"/>
+            <result property="createdBy" column="c_created_by"/>
+            <result property="gmtModified" column="c_gmt_modified"/>
+            <result property="modifiedBy" column="c_modified_by"/>
+        </association>
+        <collection property="articleTagDOSet" ofType="com.yd1994.alpacablog.blogservice.entity.ArticleTagDO">
+            <id property="id" column="t_id"/>
+            <result property="name" column="t_name"/>
+            <result property="description" column="t_description"/>
+            <result property="enabled" column="t_enabled"/>
+            <result property="deleted" column="t_deleted"/>
+            <result property="version" column="t_version"/>
+            <result property="gmtCreated" column="t_gmt_created"/>
+            <result property="createdBy" column="t_created_by"/>
+            <result property="gmtModified" column="t_gmt_modified"/>
+            <result property="modifiedBy" column="t_modified_by"/>
+        </collection>
+    </resultMap>
+    
+    <sql id="articleColumns">
+        a.id,
+        a.title,
+        ${content}
+        a.summary,
+        a.traffic,
+        a.top,
+        a.deleted,
+        a.version,
+        a.gmt_created,
+        a.created_by,
+        a.gmt_modified,
+        a.modified_by,
+        c.id as c_id,
+        c.name as c_name,
+        c.description as c_description,
+        c.enabled as c_enabled,
+        c.deleted as c_deleted,
+        c.version as c_version,
+        c.gmt_created as c_gmt_created,
+        c.created_by as c_created_by,
+        c.gmt_modified as c_gmt_modified,
+        c.modified_by as c_modified_by,
+        t.id as t_id,
+        t.name as t_name,
+        t.description as t_description,
+        t.enabled as t_enabled,
+        t.deleted as t_deleted,
+        t.version as t_version,
+        t.gmt_created as t_gmt_created,
+        t.created_by as t_created_by,
+        t.gmt_modified as t_gmt_modified,
+        t.modified_by as t_modified_by
+    </sql>
+
+    <sql id="articleFrom">
+        left join alpaca_blog_category_article ac on a.id = ac.article_id
+        left join alpaca_blog_category c on c.id = ac.category_id
+        left join alpaca_blog_article_article_tag aat on aat.article_id = a.id
+        left join alpaca_blog_article_tag t on t.id = aat.article_tag_id and t.deleted = 0
+    </sql>
+
+    <select id="getById" resultMap="articleResultMap" parameterType="long">
+        select
+        <include refid="articleColumns"><property name="content" value="a.content,"></property></include>
+        from (
+        select * from alpaca_blog_article
+        <where>
+            id = #{id} and deleted = 0
+        </where>
+        ) a
+        <include refid="articleFrom"/>
+    </select>
+
+    <select id="list" resultMap="articleResultMap" >
+        select
+        <include refid="articleColumns"><property name="content" value=""></property></include>
+        from
+        (
+        select * from alpaca_blog_article a
+        inner join alpaca_blog_category_article ac on a.id = ac.article_id
+        <where>
+            a.deleted = 0
+            <if test="param.before != null and param.beforeBy != null">
+                and a.${param.beforeBy} &lt;= #{param.before}
+            </if>
+            <if test="param.after != null and param.afterBy != null">
+                and a.${param.afterBy} &gt;= #{param.after}
+            </if>
+            <if test="param.view != null">
+                and (a.title like CONCAT('%',#{param.view},'%')
+                or a.content like CONCAT('%',#{param.view},'%')
+                or a.summary like CONCAT('%',#{param.view},'%'))
+            </if>
+            <if test="categoryId != null">
+                and ac.category_id = #{categoryId}
+            </if>
+        </where>
+        <if test="param.sortByAscs != null or param.sortByDescs != null">
+            order by
+            <if test="param.sortByAscs != null">
+                <foreach collection="param.sortByAscs" item="item" separator=",">
+                    a.${item} asc
+                </foreach>
+            </if>
+            <if test="param.sortByDescs != null">
+                <foreach collection="param.sortByDescs" item="item" separator=",">
+                    a.${item} desc
+                </foreach>
+            </if>
+        </if>
+        <if test="limitStart != null and limitSize != null">
+            limit #{limitStart}, #{limitSize}
+        </if>
+        ) a
+        left join alpaca_blog_category c on c.id = a.category_id
+        left join alpaca_blog_article_article_tag aat on aat.article_id = a.id
+        left join alpaca_blog_article_tag t on t.id = aat.article_tag_id
+    </select>
+
+    <select id="listTotal" resultType="long" >
+        select count(id) from alpaca_blog_article a
+        inner join alpaca_blog_category_article ac on a.id = ac.article_id
+        <where>
+            a.deleted = 0
+            <if test="param.view != null">
+                and (
+                a.title like CONCAT('%',#{param.view},'%')
+                or a.content like CONCAT('%',#{param.view},'%')
+                )
+            </if>
+            <if test="param.before != null and param.beforeBy != null">
+                and a.${param.beforeBy} &lt;= #{param.before}
+            </if>
+            <if test="param.after != null and param.afterBy != null">
+                and a.${param.afterBy} &gt;= #{param.after}
+            </if>
+            <if test="categoryId != null">
+                and ac.category_id = #{categoryId}
+            </if>
+        </where>
+    </select>
+
+</mapper>

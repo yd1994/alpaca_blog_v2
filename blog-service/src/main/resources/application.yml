@@ -1,0 +1,54 @@
+server:
+  port: 9042
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3308/alpaca_blog_e1?charset=utf8mb4&serverTimezone=GMT&useSSL=false&autoReconnect=true&allowPublicKeyRetrieval=true
+    username: root
+    password: 123456
+  redis:
+    host: 127.0.0.1
+    port: 6380
+    password: 123456
+    database: 3
+    jedis:
+      pool:
+        max-active: 8
+        max-idle: 8
+        min-idle: 0
+        max-wait: -1ms
+
+mybatis-plus:
+  mapper-locations: classpath*:mapper/*.xml
+  global-config:
+    db-config:
+      logic-delete-value: 1 # 逻辑已删除值(默认为 1)
+      logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
+
+logging:
+  level:
+    com.yd1994.alpacablog.blogservice.mapper: debug
+
+
+security:
+  oauth2:
+    client:
+      clientId: blog_service
+      clientSecret: blog_service_password
+      accessTokenUri: http://localhost:9041/oauth/token
+      grant-type: client_credentials
+    resource:
+      user-info-uri: http://localhost:9041/users/current
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://registry:${REGISTRY_PASSWORD}@localhost:9040/eureka/
+
+system:
+  file:
+   filePath:
+    image: /usr/local/upload/images

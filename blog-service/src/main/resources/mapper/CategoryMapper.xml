@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yd1994.alpacablog.blogservice.mapper.CategoryMapper">
+
+    <resultMap id="articleResultMap" type="com.yd1994.alpacablog.blogservice.entity.CategoryDO">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description"/>
+        <result property="available" column="is_available"/>
+        <result property="delete" column="is_delete"/>
+        <result property="version" column="version"/>
+        <result property="gmtCreated" column="gmt_created"/>
+        <result property="createdBy" column="created_by"/>
+        <result property="gmtModified" column="gmt_modified"/>
+        <result property="modifiedBy" column="modified_by"/>
+    </resultMap>
+
+    <sql id="categoryolumn">
+        id, name, description, is_available, is_delete, version, gmt_created, created_by, gmt_modified, modified_by
+    </sql>
+
+</mapper>
