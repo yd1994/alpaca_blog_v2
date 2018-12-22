@@ -1,0 +1,19 @@
+server:
+  port: 9043
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://registry:${REGISTRY_PASSWORD}@localhost:9040/eureka/
+
+security:
+  oauth2:
+    client:
+      clientId: statistics_service
+      clientSecret: statistics_service_password
+      accessTokenUri: http://localhost:9041/oauth/token
+      grant-type: client_credentials
+    resource:
+      user-info-uri: http://localhost:9041/users/current
