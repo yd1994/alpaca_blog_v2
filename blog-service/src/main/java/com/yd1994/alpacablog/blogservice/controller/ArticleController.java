@@ -42,6 +42,12 @@ public class ArticleController {
         return ResponseEntity.ok(article);
     }
 
+    @GetMapping("/{id}/content")
+    public ResponseEntity getContent(@PathVariable("id") Long id) throws Exception {
+        Article article = this.articleService.get(id);
+        return ResponseEntity.ok(article.getContent());
+    }
+
     @PreAuthorize("#oauth2.hasAnyScope('server', 'client') and hasAuthority('admin')")
     @PostMapping
     public ResponseEntity add(Article article, Principal principal) throws Exception {
