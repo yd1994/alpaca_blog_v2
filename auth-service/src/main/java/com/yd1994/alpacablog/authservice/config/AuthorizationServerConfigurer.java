@@ -43,13 +43,19 @@ public class AuthorizationServerConfigurer extends AuthorizationServerConfigurer
                 .secret(environment.getProperty("client_vue_password"))
                 .authorizedGrantTypes("password", "refresh_token")
                 .scopes("client")
-                .resourceIds("auth-service", "blog-service")
+                .resourceIds("auth-service", "blog-service", "statistics-service")
                 .and()
                 .withClient("blog_service")
                 .secret(environment.getProperty("blog_service_password"))
                 .authorizedGrantTypes("client_credentials", "refresh_token")
                 .scopes("server")
-                .resourceIds("auth-service", "blog-service");
+                .resourceIds("auth-service", "blog-service", "statistics-service")
+                .and()
+                .withClient("statistics_service")
+                .secret(environment.getProperty("statistics_service_password"))
+                .authorizedGrantTypes("client_credentials", "refresh_token")
+                .scopes("server")
+                .resourceIds("auth-service", "blog-service", "statistics-service");;
     }
 
     @Override
