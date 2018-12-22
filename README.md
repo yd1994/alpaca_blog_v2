@@ -13,7 +13,7 @@ ALPACA BLOG 是单用户博客系统，分为前端和后端两部分，前端�
 特点
 ========
 - 前后端分离
-- 前台多平台兼容（可自适应pc、手机浏览器，可构建ios、android、Electron应用）
+- 前台多平台兼容（可自适应pc、手机浏览器，可构建成ios、android、Electron应用）
 - restful API
 - Spring Cloud 部分功能加持（由于服务器内存有限，只使用Eureka，oauth、feign，未使用config，zuul等功能）
 
